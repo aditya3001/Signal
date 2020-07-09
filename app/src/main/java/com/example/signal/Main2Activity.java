@@ -20,7 +20,7 @@ import com.zerodhatech.kiteconnect.KiteConnect;
 public class Main2Activity extends AppCompatActivity {
     private TextView txt;
     private Button signin;
-    public Mykiteconnect kite = new Mykiteconnect("tjcby5dbku38j51o");
+    public KiteConnect kite = new KiteConnect("tjcby5dbku38j51o");
 
 
     @Override
