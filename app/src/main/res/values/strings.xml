@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Signal</string>
+    <string name="amount">\"Woah! You have got this much money: \"</string>
+</resources>
