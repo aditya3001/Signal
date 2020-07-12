@@ -26,8 +26,6 @@ public class Main3Activity extends AppCompatActivity {
     String Status = "Failed";
     String Action;
     String Request_token;
-    String ur;
-    String api_secret_key = new String("abc");  //need to keep it hidden
     String status = new String("status=");
     String action = new String("action=");
     String request_token = new String("request_token=");
@@ -48,7 +46,9 @@ public class Main3Activity extends AppCompatActivity {
         web1 = findViewById(R.id.web);
         Intent intent = getIntent();
         String website = intent.getStringExtra("links");
+
         KiteConnect kiteSdk = new KiteConnect("tjcby5dbku38j51o");
+
         web1.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageFinished(WebView view, String url) {
@@ -74,25 +74,6 @@ public class Main3Activity extends AppCompatActivity {
 
 
 
-//        try {
-//            User user = kiteSdk.generateSession(this.Request_token, api_secret_key);
-//            public_token = user.publicToken;
-//            SharedPreferences sharedPref = getParent().getPreferences(Context.MODE_PRIVATE);
-//            SharedPreferences.Editor editor = sharedPref.edit();
-//            editor.putString("access_token", user.accessToken);
-//            editor.commit();
-//        } catch (KiteException e) {
-//            e.printStackTrace();
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-//        SharedPreferences sharedPref = getParent().getPreferences(Context.MODE_PRIVATE);
-//        String accessToken = sharedPref.getString("access_token", "abc");
-//        kiteSdk.setAccessToken(accessToken);
-//        kiteSdk.setPublicToken(public_token);
 
     }
     public void parse_url(String url, String req, String sta, String act) {

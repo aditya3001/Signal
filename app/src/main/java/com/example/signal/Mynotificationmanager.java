@@ -30,7 +30,7 @@ public class Mynotificationmanager {
         CharSequence textTitle;
         CharSequence textContent;
         Notification mnotification = new NotificationCompat.Builder(this.ctx, CHANNEL_ID)
-                .setSmallIcon(R.drawable.common_google_signin_btn_icon_light)
+                .setSmallIcon(R.mipmap.Signal_foreground)
                 .setContentIntent(pendingIntent)
                 .setContentTitle(from)
                 .setContentText(notification)
