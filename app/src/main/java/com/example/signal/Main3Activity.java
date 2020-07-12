@@ -48,7 +48,7 @@ public class Main3Activity extends AppCompatActivity {
         web1 = findViewById(R.id.web);
         Intent intent = getIntent();
         String website = intent.getStringExtra("links");
-        Mykiteconnect kiteSdk = new Mykiteconnect("tjcby5dbku38j51o");
+        KiteConnect kiteSdk = new KiteConnect("tjcby5dbku38j51o");
         web1.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageFinished(WebView view, String url) {

@@ -17,20 +17,12 @@ android {
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
-        python {
-            buildPython "C:\\ProgramData\\Anaconda3\\python.exe"
-        }
 
         sourceSets {
             main {
                 python {
                     srcDirs = ["src/main/python"]
                 }
-            }
-        }
-        python {
-            pip {
-
             }
         }
     }
