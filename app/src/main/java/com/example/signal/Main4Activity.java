@@ -39,6 +39,7 @@ public class Main4Activity extends AppCompatActivity {
     private String request_token;
     private String[] InstrumentT;
     private ArrayList<Long> InstrumentToken;
+    private String[][] data;
     Margin.Available Current_balance;
     TextView textview1,textview2;
     String api_secret_key = new String("abc");  //need to keep it hidden
@@ -101,10 +102,26 @@ public class Main4Activity extends AppCompatActivity {
 //        }
 
         myDb = new MyDataBase(this);
+        data = fetchDataFromSQL();
+        final Mynotificationmanager mynotificationmanager = new Mynotificationmanager(this);
         mykiteTicker.setOnTickerArrivalListener(new OnTicks() {
             @Override
             public void onTicks(ArrayList<Tick> arrayList) {
+                int i = 0;
+                for (i=0;i<data.length;i++){
+                    Long tok = Long.parseLong(data[i][4]);
+                    float tgt = Float.parseFloat(data[i][2]);
+                    float stpl = Float.parseFloat(data[i][3]);
 
+                    int j=0;
+                    for(j=0;j<arrayList.size();j++){
+                        if(tok = (((arrayList.get(j).getInstrumentToken()))){
+                            if (tgt<=arrayList.get(j).getClosePrice()){
+                                mynotificationmanager.showNotification("");
+                            }
+                        }
+                    }
+                }
             }
         });
         mykiteTicker.setOnConnectedListener(new OnConnect() {
@@ -136,10 +153,7 @@ public class Main4Activity extends AppCompatActivity {
     }
 
 
-    @Override
-    public void setFinishOnTouchOutside(boolean finish) {
-        super.setFinishOnTouchOutside(finish);
-    }
+
 
     private ArrayList<Long> mapToken(String[] ins) throws IOException, JSONException, KiteException {
         final List<Instrument> instruments = kiteSdk.getInstruments("NSE");
@@ -149,7 +163,9 @@ public class Main4Activity extends AppCompatActivity {
             for(j=0;j<instruments.size();j++){
                 if(ins[i].equals(instruments.get(j).name)){
                     InstrumentToken.set(i, instruments.get(j).getInstrument_token());
+                    data[i][4] = String.valueOf(instruments.get(j).getInstrument_token());
                 }
+
             }
         }
         return InstrumentToken;
