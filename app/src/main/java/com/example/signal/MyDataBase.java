@@ -17,6 +17,8 @@ public class MyDataBase extends SQLiteOpenHelper {
     public static final String Col_2 = "Stock_Name";
     public static final String Col_3 = "Target";
     public static final String Col_4 = "Stop_Loss";
+    public static final String Col_5 = "Instrument_Token";
+
     String[] Stock_name;
     Cursor res;
 
@@ -28,7 +30,7 @@ public class MyDataBase extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table "+Tb_Name+" (ID INTEGER PRIMARY KEY AUTOINCREMENT,Stock_Name TEXT,Target float,Stop_Loss float)");
+        db.execSQL("create table "+Tb_Name+" (ID INTEGER PRIMARY KEY AUTOINCREMENT,Stock_Name TEXT,Target float,Stop_Loss float,Instrument_Token long Default 0)");
     }
 
     @Override
