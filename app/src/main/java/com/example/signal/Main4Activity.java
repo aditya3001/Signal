@@ -1,7 +1,7 @@
 package com.example.signal;
 
 import androidx.appcompat.app.AppCompatActivity;
-
+import android.os.AsyncTask;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.util.Log;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -43,22 +44,25 @@ public class Main4Activity extends AppCompatActivity {
     private String[] InstrumentT;
     private ArrayList<Long> InstrumentToken;
     private String[][] data;
-    Margin.Available Current_balance;
+    KiteConnect kiteSdk = new KiteConnect("o2u3tpulm3z3agny");
+    User user = null;
+    private String AccessToken;
+    float Current_balance;
     TextView textview1,textview2;
+
 
     EditText editCompanyName,stopLossValue,targetValue;
     Button sendButton;
     Switch switchbutton1;
 
     String api_secret_key = new String("abc");  //need to keep it hidden
+
     String public_token;
     MyDataBase myDb;
-    KiteConnect kiteSdk = new KiteConnect("tjcby5dbku38j51o");
-    MykiteTicker mykiteTicker = new MykiteTicker(kiteSdk.getAccessToken(),kiteSdk.getApiKey());
+
+    MykiteTicker mykiteTicker;
     Cursor cur;
-    KiteRequestHandler kiteRequestHandler = new KiteRequestHandler(Proxy.NO_PROXY);
     Instrument instrument;
-    Routes routes = new Routes();
 
 
     @Override
@@ -67,10 +71,18 @@ public class Main4Activity extends AppCompatActivity {
         setContentView(R.layout.activity_main4);
         myDb = new MyDataBase(this);
         Intent intent = getIntent();
-//        KiteConnect kiteSdk = new KiteConnect("tjcby5dbku38j51o");
-//        request_token = intent.getParcelableExtra("request_token");
-//
+        request_token = intent.getStringExtra("request_token");
+
+
+
+
+//        MyThread thread = new MyThread(intent);
+//        thread.start();
+        Log.d("Activity 4","We are in Activity 4");
 //        try {
+//            //need to keep it hidden
+//            String api_secret_key = "";
+//            request_token = intent.getStringExtra("request_token");
 //            User user = kiteSdk.generateSession(request_token, api_secret_key);
 //            public_token = user.publicToken;
 //            SharedPreferences sharedPref = getParent().getPreferences(Context.MODE_PRIVATE);
@@ -84,9 +96,10 @@ public class Main4Activity extends AppCompatActivity {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-//
+
 //        SharedPreferences sharedPref = getParent().getPreferences(Context.MODE_PRIVATE);
 //        String accessToken = sharedPref.getString("access_token", "abc");
+
 //        kiteSdk.setAccessToken(accessToken);
 //        kiteSdk.setPublicToken(public_token);
 //
@@ -110,10 +123,12 @@ public class Main4Activity extends AppCompatActivity {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-        textview1 = findViewById(R.id.textView1);
-        textview2 = findViewById(R.id.textView2);
-        textview1.setText("Hi ");
-        textview1.setText(R.string.amount);
+//        textview1 = findViewById(R.id.textView1);
+//        textview2 = findViewById(R.id.textView2);
+//        textview1.setText("Hi ");
+//        textview1.setText(R.string.amount);
+        Myasync myasync = new Myasync();
+        myasync.execute("me");
         editCompanyName = (EditText)findViewById(R.id.editTextCompanyName);
         stopLossValue =  (EditText)findViewById(R.id.stopLossValue);
         targetValue = (EditText)findViewById(R.id.targetValue);
@@ -137,55 +152,161 @@ public class Main4Activity extends AppCompatActivity {
         });
 
 
-        data = fetchDataFromSQL();
-        final Mynotificationmanager mynotificationmanager = new Mynotificationmanager(this);
-        mykiteTicker.setOnTickerArrivalListener(new OnTicks() {
-            @Override
-            public void onTicks(ArrayList<Tick> arrayList) {
-                int i = 0;
-                for (i=0;i<data.length;i++){
-                    Long tok = Long.parseLong(data[i][4]);
-                    float tgt = Float.parseFloat(data[i][2]);
-                    float stpl = Float.parseFloat(data[i][3]);
+//        data = fetchDataFromSQL();
+//        final Mynotificationmanager mynotificationmanager = new Mynotificationmanager(this);
+//        mykiteTicker.setOnTickerArrivalListener(new OnTicks() {
+//            @Override
+//            public void onTicks(ArrayList<Tick> arrayList) {
+//                int i = 0;
+//                for (i=0;i<data.length;i++){
+//                    Long tok = Long.parseLong(data[i][4]);
+//                    float tgt = Float.parseFloat(data[i][2]);
+//                    float stpl = Float.parseFloat(data[i][3]);
+//
+//                    int j=0;
+//                    for(j=0;j<arrayList.size();j++){
+//                        if(tok == (((arrayList.get(j).getInstrumentToken()))))
+//                        {
+//                            if (tgt<=arrayList.get(j).getClosePrice()){
+////                                mynotificationmanager.showNotification("");
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        });
+//        mykiteTicker.setOnConnectedListener(new OnConnect() {
+//            @Override
+//            public void onConnected() {
+//                int j = 0;
+//                for (j=0;j<fetchDataFromSQL().length;j++) {
+//                    InstrumentT[j] =fetchDataFromSQL()[j][1];
+//                }
+//                try {
+//                    mapToken(InstrumentT);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                } catch (KiteException e) {
+//                    e.printStackTrace();
+//                }
+//                mykiteTicker.subscribe(InstrumentToken);
+//            }
+//        });
+//
+//        mykiteTicker.setOnDisconnectedListener(new OnDisconnect() {
+//            @Override
+//            public void onDisconnected() {
+//                mykiteTicker.unsubscribe(InstrumentToken);
+//            }
+//        });
+//    }
 
-                    int j=0;
-                    for(j=0;j<arrayList.size();j++){
-                        if(tok == (((arrayList.get(j).getInstrumentToken()))))
-                        {
-                            if (tgt<=arrayList.get(j).getClosePrice()){
-//                                mynotificationmanager.showNotification("");
-                            }
-                        }
-                    }
-                }
-            }
-        });
-        mykiteTicker.setOnConnectedListener(new OnConnect() {
-            @Override
-            public void onConnected() {
-                int j = 0;
-                for (j=0;j<fetchDataFromSQL().length;j++) {
-                    InstrumentT[j] =fetchDataFromSQL()[j][1];
-                }
-                try {
-                    mapToken(InstrumentT);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (KiteException e) {
-                    e.printStackTrace();
-                }
-                mykiteTicker.subscribe(InstrumentToken);
-            }
-        });
 
-        mykiteTicker.setOnDisconnectedListener(new OnDisconnect() {
-            @Override
-            public void onDisconnected() {
-                mykiteTicker.unsubscribe(InstrumentToken);
+//
+//        textview1.setText("Hi "+ thread.Profile_name);
+//        textview1.setText("Woah! You have got: "+ thread.Current_balance);
+
+//
+//        mykiteTicker = new MykiteTicker(kiteSdk.getAccessToken(),kiteSdk.getApiKey());
+//
+//        myDb = new MyDataBase(this);
+//        data = fetchDataFromSQL();
+//        final Mynotificationmanager mynotificationmanager = new Mynotificationmanager(this);
+//        mykiteTicker.setOnTickerArrivalListener(new OnTicks() {
+//            @Override
+//            public void onTicks(ArrayList<Tick> arrayList) {
+//                int i = 0;
+//                for (i=0;i<data.length;i++){
+//                    Long tok = Long.parseLong(data[i][4]);
+//                    float tgt = Float.parseFloat(data[i][2]);
+//                    float stpl = Float.parseFloat(data[i][3]);
+//
+//                    int j=0;
+//                    for(j=0;j<arrayList.size();j++){
+//                        if(tok == (((arrayList.get(j).getInstrumentToken())))){
+//                            if (tgt<=arrayList.get(j).getClosePrice()){
+////                                mynotificationmanager.showNotification("");
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        });
+//        mykiteTicker.setOnConnectedListener(new OnConnect() {
+//            @Override
+//            public void onConnected() {
+//                int j = 0;
+//                for (j=0;j<fetchDataFromSQL().length;j++) {
+//                    InstrumentT[j] =fetchDataFromSQL()[j][1];
+//                }
+//                try {
+//                    mapToken(InstrumentT);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                } catch (KiteException e) {
+//                    e.printStackTrace();
+//                }
+//                mykiteTicker.subscribe(InstrumentToken);
+//            }
+//        });
+//
+//        mykiteTicker.setOnDisconnectedListener(new OnDisconnect() {
+//            @Override
+//            public void onDisconnected() {
+//                mykiteTicker.unsubscribe(InstrumentToken);
+//            }
+//        });
+    }
+
+    public class Myasync extends AsyncTask<String , Void, Void> {
+        String api_secret_key = "4lfq1bmm65vl0q37jslr1kzwyknae202";
+        @Override
+        protected void onPreExecute() {
+            kiteSdk.setUserId("QM7226");
+        }
+
+        @Override
+        protected Void doInBackground(String... strings) {
+            try {
+                String api_secret_key = "4lfq1bmm65vl0q37jslr1kzwyknae202";
+
+                user = kiteSdk.generateSession(request_token, api_secret_key);
+
+            } catch (KiteException | IOException | JSONException e) {
+                e.printStackTrace();
             }
-        });
+            textview1 = findViewById(R.id.textView1);
+            textview2 = findViewById(R.id.textView2);
+            public_token = user.publicToken;
+            AccessToken = user.accessToken;
+            kiteSdk.setAccessToken(AccessToken);
+            kiteSdk.setPublicToken(public_token);
+            Margin margin = null;
+            try {
+                Profile profile = kiteSdk.getProfile();
+                margin = kiteSdk.getMargins("equity");
+                Profile_name = profile.userName;
+                Current_balance = Float.parseFloat(margin.net);
+            } catch (KiteException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+
+            textview1.setText("Hi: "+Profile_name);
+            textview2.setText("Amount "+Current_balance);
+        }
     }
 
 

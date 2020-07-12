@@ -30,7 +30,7 @@ public class Mynotificationmanager {
         CharSequence textTitle;
         CharSequence textContent;
         Notification mnotification = new NotificationCompat.Builder(this.ctx, CHANNEL_ID)
-                .setSmallIcon(R.mipmap.Signal_foreground)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentIntent(pendingIntent)
                 .setContentTitle(from)
                 .setContentText(notification)

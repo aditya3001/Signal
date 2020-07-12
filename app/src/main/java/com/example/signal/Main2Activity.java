@@ -20,7 +20,7 @@ import com.zerodhatech.kiteconnect.KiteConnect;
 public class Main2Activity extends AppCompatActivity {
     private TextView txt;
     private Button signin;
-    public KiteConnect kite = new KiteConnect("tjcby5dbku38j51o");
+    public KiteConnect kite = new KiteConnect("o2u3tpulm3z3agny");
 
 
     @Override
@@ -38,6 +38,7 @@ public class Main2Activity extends AppCompatActivity {
 
             }
         });
+        kite.setUserId(getString(R.string.project_id));
 
 
 //        String str = pythonprocess();
