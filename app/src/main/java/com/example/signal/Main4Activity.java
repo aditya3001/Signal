@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -40,27 +41,30 @@ public class Main4Activity extends AppCompatActivity {
     private String[] InstrumentT;
     private ArrayList<Long> InstrumentToken;
     private String[][] data;
-    Margin.Available Current_balance;
+
     TextView textview1,textview2;
-    String api_secret_key = new String("abc");  //need to keep it hidden
     String public_token;
     MyDataBase myDb;
-    KiteConnect kiteSdk = new KiteConnect("tjcby5dbku38j51o");
-    MykiteTicker mykiteTicker = new MykiteTicker(kiteSdk.getAccessToken(),kiteSdk.getApiKey());
+
+    MykiteTicker mykiteTicker;
     Cursor cur;
-    KiteRequestHandler kiteRequestHandler = new KiteRequestHandler(Proxy.NO_PROXY);
     Instrument instrument;
-    Routes routes = new Routes();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main4);
         Intent intent = getIntent();
-//        KiteConnect kiteSdk = new KiteConnect("tjcby5dbku38j51o");
-//        request_token = intent.getParcelableExtra("request_token");
-//
+
+
+
+        MyThread thread = new MyThread(intent);
+        thread.start();
+        Log.d("Activity 4","We are in Activity 4");
 //        try {
+//            //need to keep it hidden
+//            String api_secret_key = "";
+//            request_token = intent.getStringExtra("request_token");
 //            User user = kiteSdk.generateSession(request_token, api_secret_key);
 //            public_token = user.publicToken;
 //            SharedPreferences sharedPref = getParent().getPreferences(Context.MODE_PRIVATE);
@@ -74,121 +78,110 @@ public class Main4Activity extends AppCompatActivity {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-//
+
 //        SharedPreferences sharedPref = getParent().getPreferences(Context.MODE_PRIVATE);
 //        String accessToken = sharedPref.getString("access_token", "abc");
-//        kiteSdk.setAccessToken(accessToken);
-//        kiteSdk.setPublicToken(public_token);
+
+
+
+        textview1 = findViewById(R.id.textView1);
+        textview2 = findViewById(R.id.textView2);
+
+
+        textview1.setText("Hi "+ thread.Profile_name);
+        textview1.setText("Woah! You have got: "+ thread.Current_balance);
+
+
+//        mykiteTicker = new MykiteTicker(kiteSdk.getAccessToken(),kiteSdk.getApiKey());
+
+//        myDb = new MyDataBase(this);
+//        data = fetchDataFromSQL();
+//        final Mynotificationmanager mynotificationmanager = new Mynotificationmanager(this);
+//        mykiteTicker.setOnTickerArrivalListener(new OnTicks() {
+//            @Override
+//            public void onTicks(ArrayList<Tick> arrayList) {
+//                int i = 0;
+//                for (i=0;i<data.length;i++){
+//                    Long tok = Long.parseLong(data[i][4]);
+//                    float tgt = Float.parseFloat(data[i][2]);
+//                    float stpl = Float.parseFloat(data[i][3]);
 //
-//        textview1 = findViewById(R.id.textView1);
-//        textview2 = findViewById(R.id.textView2);
+//                    int j=0;
+//                    for(j=0;j<arrayList.size();j++){
+//                        if(tok = (((arrayList.get(j).getInstrumentToken()))){
+//                            if (tgt<=arrayList.get(j).getClosePrice()){
+//                                mynotificationmanager.showNotification("");
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        });
+//        mykiteTicker.setOnConnectedListener(new OnConnect() {
+//            @Override
+//            public void onConnected() {
+//                int j = 0;
+//                for (j=0;j<fetchDataFromSQL().length;j++) {
+//                    InstrumentT[j] =fetchDataFromSQL()[j][1];
+//                }
+//                try {
+//                    mapToken(InstrumentT);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                } catch (KiteException e) {
+//                    e.printStackTrace();
+//                }
+//                mykiteTicker.subscribe(InstrumentToken);
+//            }
+//        });
+//
+//        mykiteTicker.setOnDisconnectedListener(new OnDisconnect() {
+//            @Override
+//            public void onDisconnected() {
+//                mykiteTicker.unsubscribe(InstrumentToken);
+//            }
+//        });
+//    }
 //
 //
-//        try {
 //
-//            Profile profile = kiteSdk.getProfile();
-//            Margin margin = kiteSdk.getMargins("equity");
-//            this.Profile_name = profile.userName;
-//            this.Current_balance = margin.available;
-//            textview1.setText("Hi "+ this.Profile_name);
-//            textview1.setText("Woah! You have got: "+ this.Current_balance);
 //
-//        } catch (KiteException e) {
-//            e.printStackTrace();
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
+//    private ArrayList<Long> mapToken(String[] ins) throws IOException, JSONException, KiteException {
+//        final List<Instrument> instruments = kiteSdk.getInstruments("NSE");
+//        int i = 0;
+//        for (i=0;i<ins.length;i++){
+//            int j=0;
+//            for(j=0;j<instruments.size();j++){
+//                if(ins[i].equals(instruments.get(j).name)){
+//                    InstrumentToken.set(i, instruments.get(j).getInstrument_token());
+//                    data[i][4] = String.valueOf(instruments.get(j).getInstrument_token());
+//                }
+//
+//            }
 //        }
-
-        myDb = new MyDataBase(this);
-        data = fetchDataFromSQL();
-        final Mynotificationmanager mynotificationmanager = new Mynotificationmanager(this);
-        mykiteTicker.setOnTickerArrivalListener(new OnTicks() {
-            @Override
-            public void onTicks(ArrayList<Tick> arrayList) {
-                int i = 0;
-                for (i=0;i<data.length;i++){
-                    Long tok = Long.parseLong(data[i][4]);
-                    float tgt = Float.parseFloat(data[i][2]);
-                    float stpl = Float.parseFloat(data[i][3]);
-
-                    int j=0;
-                    for(j=0;j<arrayList.size();j++){
-                        if(tok = (((arrayList.get(j).getInstrumentToken()))){
-                            if (tgt<=arrayList.get(j).getClosePrice()){
-                                mynotificationmanager.showNotification("");
-                            }
-                        }
-                    }
-                }
-            }
-        });
-        mykiteTicker.setOnConnectedListener(new OnConnect() {
-            @Override
-            public void onConnected() {
-                int j = 0;
-                for (j=0;j<fetchDataFromSQL().length;j++) {
-                    InstrumentT[j] =fetchDataFromSQL()[j][1];
-                }
-                try {
-                    mapToken(InstrumentT);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (KiteException e) {
-                    e.printStackTrace();
-                }
-                mykiteTicker.subscribe(InstrumentToken);
-            }
-        });
-
-        mykiteTicker.setOnDisconnectedListener(new OnDisconnect() {
-            @Override
-            public void onDisconnected() {
-                mykiteTicker.unsubscribe(InstrumentToken);
-            }
-        });
-    }
-
-
-
-
-    private ArrayList<Long> mapToken(String[] ins) throws IOException, JSONException, KiteException {
-        final List<Instrument> instruments = kiteSdk.getInstruments("NSE");
-        int i = 0;
-        for (i=0;i<ins.length;i++){
-            int j=0;
-            for(j=0;j<instruments.size();j++){
-                if(ins[i].equals(instruments.get(j).name)){
-                    InstrumentToken.set(i, instruments.get(j).getInstrument_token());
-                    data[i][4] = String.valueOf(instruments.get(j).getInstrument_token());
-                }
-
-            }
-        }
-        return InstrumentToken;
-    }
-
-    public String[][] fetchDataFromSQL(){
-        cur = myDb.getData();
-        String data[][] = new String[cur.getCount()][cur.getColumnCount()];
-
-        if (cur != null) {
-            int i = 0;
-            while (cur.moveToNext()) {
-                int j = 0;
-                while (j < cur.getColumnCount()) {
-                    data[i][j] = cur.getString(j);
-                    j++;
-                }
-                i++;
-                cur.moveToNext();
-            }
-            cur.close();
-        }
-
-        return data;
+//        return InstrumentToken;
+//    }
+//
+//    public String[][] fetchDataFromSQL(){
+//        cur = myDb.getData();
+//        String data[][] = new String[cur.getCount()][cur.getColumnCount()];
+//
+//        if (cur != null) {
+//            int i = 0;
+//            while (cur.moveToNext()) {
+//                int j = 0;
+//                while (j < cur.getColumnCount()) {
+//                    data[i][j] = cur.getString(j);
+//                    j++;
+//                }
+//                i++;
+//                cur.moveToNext();
+//            }
+//            cur.close();
+//        }
+//
+//        return data;
     }
 }

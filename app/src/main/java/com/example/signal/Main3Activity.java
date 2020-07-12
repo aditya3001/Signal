@@ -24,10 +24,8 @@ import java.io.IOException;
 public class Main3Activity extends AppCompatActivity {
     WebView web1;
     String Status = "Failed";
-    String Action;
-    String Request_token;
+    String Request_token = "abc";
     String status = new String("status=");
-    String action = new String("action=");
     String request_token = new String("request_token=");
 
     @Override
@@ -49,12 +47,12 @@ public class Main3Activity extends AppCompatActivity {
         web1.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageFinished(WebView view, String url) {
-                parse_url(url, request_token, status, action);
+                parse_url(url, request_token, status);
                 if (Status.equals("success")) {
                     Intent intent_1 = new Intent(getApplicationContext(), Main4Activity.class);
-                    Log.d("Success","We are here");
+                    Log.d("Parsed",Request_token);
                     Toast.makeText(getApplicationContext(),"Successfully Logged In",Toast.LENGTH_LONG).show();
-                    intent_1.putExtra("request_token",  request_token);
+                    intent_1.putExtra("request_token",  Request_token);
                     //intent_1.putExtra("kite1", (Parcelable) kiteSdk);
                     //intent_1.putExtra("profile", (Parcelable) kiteSdk.getProfile());
                     startActivity(intent_1);
@@ -67,28 +65,23 @@ public class Main3Activity extends AppCompatActivity {
         web1.loadUrl(website);
         web1.getSettings().setJavaScriptEnabled(true);
 
-
-
-
-
-
     }
-    public void parse_url(String url, String req, String sta, String act) {
+    public void parse_url(String url, String req, String sta) {
         Log.d("In parse_url","Url is "+url);
         if (url != null) {
 
             int Status_index = url.indexOf(sta) + sta.length();
-            this.Status = url.substring(Status_index);
+            Status = url.substring(Status_index,Status_index+7);
 
-            if (this.Status.equals("success")) {
+            if (Status.equals("success")) {
                 int request_token_index = url.indexOf(req) + req.length();
-                int index_2 = url.indexOf("&");
-                this.Request_token = url.substring(request_token_index, index_2);
+                int index_2 = url.indexOf("&",request_token_index);
+                Request_token = url.substring(request_token_index, index_2);
 
-                int Action_index = url.indexOf(act) + act.length();
-                int index_3 = url.indexOf("&", index_2);
-                this.Action = url.substring(Action_index);
+                Log.d("In parse_url",Status);
+                Log.d("In parse_url",Request_token);
             }
+
 
         }
     }
