@@ -65,7 +65,7 @@ public class Main4Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main4);
-
+        myDb = new MyDataBase(this);
         Intent intent = getIntent();
 //        KiteConnect kiteSdk = new KiteConnect("tjcby5dbku38j51o");
 //        request_token = intent.getParcelableExtra("request_token");
@@ -123,12 +123,20 @@ public class Main4Activity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String companyName = editCompanyName.getText().toString();
+                String stopLoss = stopLossValue.getText().toString();
+                String target = targetValue.getText().toString();
+                if(myDb.insertData(companyName,target,stopLoss)){
+                    finish();
+                    overridePendingTransition(0, 0);
+                    startActivity(getIntent());
+                    overridePendingTransition(0, 0);
+                }
                 Intent intent1 = new Intent(getApplicationContext() ,Main5Activity.class);
                 startActivity(intent1);
             }
         });
 
-        myDb = new MyDataBase(this);
+
         data = fetchDataFromSQL();
         final Mynotificationmanager mynotificationmanager = new Mynotificationmanager(this);
         mykiteTicker.setOnTickerArrivalListener(new OnTicks() {
