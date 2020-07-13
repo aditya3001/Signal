@@ -79,8 +79,11 @@ public class Main3Activity extends AppCompatActivity {
             if (Status.equals("success")) {
                 int request_token_index = url.indexOf(req) + req.length();
                 int index_2 = url.indexOf("&",request_token_index);
-                Request_token = url.substring(request_token_index, index_2);
-
+                if(index_2<0){
+                    Request_token = url.substring(request_token_index);
+                }else {
+                    Request_token = url.substring(request_token_index, index_2);
+                }
                 Log.d("In parse_url",Status);
                 Log.d("In parse_url",Request_token);
             }
