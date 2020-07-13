@@ -38,7 +38,7 @@ public class Main2Activity extends AppCompatActivity {
 
             }
         });
-        kite.setUserId(getString(R.string.userid));
+        kite.setUserId(getString(R.string.project_id));
 
 
 //        String str = pythonprocess();
