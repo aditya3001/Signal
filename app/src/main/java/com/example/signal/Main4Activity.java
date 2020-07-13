@@ -137,6 +137,7 @@ public class Main4Activity extends AppCompatActivity {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 String companyName = editCompanyName.getText().toString();
                 String stopLoss = stopLossValue.getText().toString();
                 String target = targetValue.getText().toString();

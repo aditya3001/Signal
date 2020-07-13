@@ -18,6 +18,7 @@ public class MyDataBase extends SQLiteOpenHelper {
     public static final String Col_3 = "Target";
     public static final String Col_4 = "Stop_Loss";
     public static final String Col_5 = "Instrument_Token";
+    public static final String Col_6 = "Time_Stamp";
 
     String[] Stock_name;
     Cursor res;
@@ -30,12 +31,13 @@ public class MyDataBase extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table "+Tb_Name+" (ID INTEGER PRIMARY KEY AUTOINCREMENT,Stock_Name TEXT,Target float,Stop_Loss float,Instrument_Token long Default 0)");
+        db.execSQL("CREATE TABLE "+Tb_Name+" (ID INTEGER PRIMARY KEY AUTOINCREMENT,Stock_Name TEXT,Target float,Stop_Loss float,Instrument_Token long Default 0, Time_Stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP);");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("Drop table if exists "+Tb_Name);
+        onCreate(db);
     }
 
     public boolean insertData(String StckNme, String Tgt,String Stp_ls ){
@@ -44,6 +46,7 @@ public class MyDataBase extends SQLiteOpenHelper {
         contentValues.put(Col_2,StckNme);
         contentValues.put(Col_3,Tgt);
         contentValues.put(Col_4,Stp_ls);
+
         long result = db.insert(Tb_Name,null,contentValues);
         if(result == -1){
             return false;
