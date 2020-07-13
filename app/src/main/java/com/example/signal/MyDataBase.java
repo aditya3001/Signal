@@ -57,7 +57,7 @@ public class MyDataBase extends SQLiteOpenHelper {
     public Cursor getData(){
         SQLiteDatabase db = this.getWritableDatabase();
         try {
-            Cursor res = db.rawQuery("select * from " + Tb_Name, null);
+             res = db.query(Tb_Name, null,null,null,null,null,Col_6 + " DESC");
 
         }catch(SQLException e) {
             Log.d("DATABASE", e.toString());
