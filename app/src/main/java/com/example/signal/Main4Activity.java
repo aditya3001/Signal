@@ -62,7 +62,7 @@ public class Main4Activity extends AppCompatActivity {
     Switch switchbutton1;
     int Flag = 10;
 
-    private String api_secret_key = new String("4lfq1bmm65vl0q37jslr1kzwyknae202");  //need to keep it hidden
+    private String api_secret_key = new String("");  //need to keep it hidden
 
     String public_token;
     MyDataBase myDb;
@@ -195,13 +195,13 @@ public class Main4Activity extends AppCompatActivity {
     public class Myasync extends AsyncTask<String , Void, Void> {
         @Override
         protected void onPreExecute() {
-            kiteSdk.setUserId("QM7226");
+            kiteSdk.setUserId("");
         }
 
         @Override
         protected Void doInBackground(String... strings) {
             try {
-                String api_secret_key = "4lfq1bmm65vl0q37jslr1kzwyknae202";
+                String api_secret_key = "";
 
                 user = kiteSdk.generateSession(request_token, api_secret_key);
 
@@ -246,9 +246,9 @@ public class Main4Activity extends AppCompatActivity {
             mykiteTicker.setOnConnectedListener(new OnConnect() {
                 @Override
                 public void onConnected() {
-                    Toast.makeText(getApplicationContext(),"Connected",Toast.LENGTH_LONG).show();
-                    Log.d("Ticks"," Test Token"+ testtoken.get(0));
+                    Log.d("Ticks"," Test Token"+ testtoken.get(0).longValue());
                     mykiteTicker.subscribe(testtoken);
+                    Toast.makeText(getApplicationContext(),"Connected",Toast.LENGTH_LONG).show();
 //                int j = 0;
 //                for (j=0;j<fetchDataFromSQL().length;j++) {
 //                    InstrumentT[j] =fetchDataFromSQL()[j][1];
