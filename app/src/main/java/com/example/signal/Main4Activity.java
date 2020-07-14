@@ -45,7 +45,6 @@ import java.util.List;
 public class Main4Activity extends AppCompatActivity {
     private String Profile_name;
     private String request_token;
-    private String[] InstrumentT;
     private ArrayList<Long> InstrumentToken;
     private String[][] data;
     KiteConnect kiteSdk = new KiteConnect("o2u3tpulm3z3agny");
@@ -53,22 +52,24 @@ public class Main4Activity extends AppCompatActivity {
     private String AccessToken = "";
     float Current_balance;
     TextView textview1,textview2;
-
     ArrayList<Long> testtoken = new ArrayList<Long>(Arrays.asList((long)1207553, 2714625L));
+
+    ArrayList<String> Stock_Name;
+    ArrayList<Float> Target;
+    ArrayList<Float> Stop_Loss;
+    ArrayList<Long> InstrumentTokendb;
 
     EditText editCompanyName,stopLossValue,targetValue;
     Button sendButton;
     Button seeDetails;
     Switch switchbutton1;
     int Flag = 10;
-
-    private String api_secret_key = new String("");  //need to keep it hidden
-
+    public int DONE;
     String public_token="";
     MyDataBase myDb;
 
     KiteTicker mykiteTicker;
-    Cursor cur;
+
     Instrument instrument;
 
 
@@ -80,17 +81,13 @@ public class Main4Activity extends AppCompatActivity {
         final Intent intent = getIntent();
         request_token = intent.getStringExtra("request_token");
         final Mynotificationmanager mynotificationmanager = new Mynotificationmanager(this);
-
-//        MyThread thread = new MyThread(intent);
-//        thread.start();
-        Log.d("Activity 4","We are in Activity 4");
-
-//        SharedPreferences sharedPref = getParent().getPreferences(Context.MODE_PRIVATE);
-//        String accessToken = sharedPref.getString("access_token", "abc");
-
-
+        myDb = new MyDataBase(this);
+        Cursor cursor = getAllItems();
+        fetchDataFromSQL(cursor);
+        Log.d("fetchDataFromSQL"," "+Stock_Name);
         final Myasync myasync = new Myasync();
         myasync.execute("me");
+
         editCompanyName = (EditText)findViewById(R.id.editTextCompanyName);
         stopLossValue =  (EditText)findViewById(R.id.stopLossValue);
         targetValue = (EditText)findViewById(R.id.targetValue);
@@ -132,10 +129,12 @@ public class Main4Activity extends AppCompatActivity {
                 if(isChecked) {
                     Flag = 1;
                     myasync1.execute("me");
+
                 } else {
                     Flag = 0;
-                    Toast.makeText(getApplicationContext(),"Cancelled",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(),"Disconnected",Toast.LENGTH_LONG).show();
                     myasync1.cancel(true);
+                    mykiteTicker.unsubscribe(testtoken);
                     mykiteTicker.disconnect();
                 }
             }else{
@@ -143,67 +142,39 @@ public class Main4Activity extends AppCompatActivity {
                 }
             }
         });
-
-
-        myDb = new MyDataBase(this);
-//        data = fetchDataFromSQL();
-//        mykiteTicker.setOnTickerArrivalListener(new OnTicks() {
-//            @Override
-//            public void onTicks(ArrayList<Tick> arrayList) {
-//                int i = 0;
-//                for (i=0;i<data.length;i++){
-//                    String Stock_Name = data[i][1];
-//                    Long tok = Long.parseLong(data[i][4]);
-//                    float tgt = Float.parseFloat(data[i][2]);
-//                    float stpl = Float.parseFloat(data[i][3]);
-//
-//                    int j=0;
-//                    for(j=0;j<arrayList.size();j++){
-//                        if(tok == (((arrayList.get(j).getInstrumentToken())))){
-//                            if (tgt<=arrayList.get(j).getClosePrice()){
-//                                mynotificationmanager.showNotification(Stock_Name,"Target "+tgt+" Hit",intent);
-//                            }else{
-//                                if (stpl>=arrayList.get(j).getClosePrice()){
-//                                    mynotificationmanager.showNotification(Stock_Name,"Target "+stpl+" Hit",intent);
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        });
-
 }
-    public String[][] fetchDataFromSQL(){
-        cur = myDb.getData();
-        String data[][] = new String[cur.getCount()][cur.getColumnCount()];
 
-        if (cur != null) {
+    private void fetchDataFromSQL(Cursor curs) {
+        if (curs != null) {
             int i = 0;
-            while (cur.moveToNext()) {
-                int j = 0;
-                while (j < cur.getColumnCount()) {
-                    data[i][j] = cur.getString(j);
-                    j++;
+            while (curs.moveToNext()) {
+                Stock_Name.add(i,curs.getString(curs.getColumnIndex(MyDataBase.Col_2)));
+                Target.add(i,Float.parseFloat(curs.getString(curs.getColumnIndex(MyDataBase.Col_3))));
+                Stop_Loss.add(i,Float.parseFloat(curs.getString(curs.getColumnIndex(MyDataBase.Col_4))));
+                InstrumentTokendb.add(i,Long.parseLong(curs.getString(curs.getColumnIndex(MyDataBase.Col_5))));
                 }
                 i++;
-                cur.moveToNext();
+                curs.moveToNext();
             }
-            cur.close();
+            curs.close();
         }
 
-        return data;
+
+
+
+    private Cursor getAllItems() {
+        return myDb.getData();
     }
     public class Myasync extends AsyncTask<String , Void, Void> {
         @Override
         protected void onPreExecute() {
-            kiteSdk.setUserId("");
+            kiteSdk.setUserId("QM7226");
         }
 
         @Override
         protected Void doInBackground(String... strings) {
             try {
-                String api_secret_key = "";
+                String api_secret_key = "4lfq1bmm65vl0q37jslr1kzwyknae202";
 
                 user = kiteSdk.generateSession(request_token, api_secret_key);
 
@@ -250,13 +221,9 @@ public class Main4Activity extends AppCompatActivity {
             mykiteTicker.setOnConnectedListener(new OnConnect() {
                 @Override
                 public void onConnected() {
-                    Log.d("Ticks"," Test Token"+ testtoken.get(0).longValue());
                     mykiteTicker.subscribe(testtoken);
-                    Toast.makeText(getApplicationContext(),"Connected",Toast.LENGTH_LONG).show();
-//                int j = 0;
-//                for (j=0;j<fetchDataFromSQL().length;j++) {
-//                    InstrumentT[j] =fetchDataFromSQL()[j][1];
-//                }
+                    Log.d("Connected","We are in connected");
+
 //                try {
 //                    mapToken(InstrumentT);
 //                } catch (IOException | KiteException | JSONException e) {
@@ -266,21 +233,13 @@ public class Main4Activity extends AppCompatActivity {
                 }
             });
 
-            mykiteTicker.setOnDisconnectedListener(new OnDisconnect() {
-                @Override
-                public void onDisconnected() {
-                    mykiteTicker.unsubscribe(testtoken);
-                    Toast.makeText(getApplicationContext(),"Unsubscribed",Toast.LENGTH_LONG).show();
-                }
-            });
             mykiteTicker.setOnTickerArrivalListener(new OnTicks() {
                 @Override
                 public void onTicks(ArrayList<Tick> arrayList) {
-                    int i =1;
                     Log.d("Ticks"," We are here"+arrayList.size());
-                    //Log.d("Ticks"," "+arrayList.get(i).getClosePrice());
-//                int i = 0;
-//                for (i=0;i<data.length;i++){
+                int i;
+                for (i=0;i<data.length;i++){
+
 //                    String Stock_Name = data[i][1];
 //                    Long tok = Long.parseLong(data[i][4]);
 //                    float tgt = Float.parseFloat(data[i][2]);
@@ -298,7 +257,7 @@ public class Main4Activity extends AppCompatActivity {
 //                        }
 //                    }
 //                }
-//            }
+            }
                 }
             });
         }
@@ -313,7 +272,6 @@ public class Main4Activity extends AppCompatActivity {
                 } catch (KiteException e) {
                     e.printStackTrace();
                 }
-
             }else if (Flag==0){
                 mykiteTicker.disconnect();
             }
@@ -329,10 +287,6 @@ public class Main4Activity extends AppCompatActivity {
             }
         }
 
-        @Override
-        protected void onCancelled(Void aVoid) {
-            Myasync1 myasync1 = new Myasync1();
-        }
     }
 
     private ArrayList<Long> mapToken(String[] ins) throws IOException, JSONException, KiteException {
