@@ -54,23 +54,21 @@ public class Main4Activity extends AppCompatActivity {
     TextView textview1,textview2;
     ArrayList<Long> testtoken = new ArrayList<Long>(Arrays.asList((long)1207553, 2714625L));
 
-    ArrayList<String> Stock_Name;
-    ArrayList<Float> Target;
-    ArrayList<Float> Stop_Loss;
-    ArrayList<Long> InstrumentTokendb;
+    ArrayList<String> Stock_Name = new ArrayList<String>();
+    ArrayList<Float> Target = new ArrayList<Float>();
+    ArrayList<Float> Stop_Loss = new ArrayList<Float>();
+    ArrayList<Long> InstrumentTokendb = new ArrayList<Long>();
 
     EditText editCompanyName,stopLossValue,targetValue;
     Button sendButton;
     Button seeDetails;
     Switch switchbutton1;
     int Flag = 10;
-    public int DONE;
+    public int DONE=1;
     String public_token="";
     MyDataBase myDb;
-
+    final Mynotificationmanager mynotificationmanager = new Mynotificationmanager(this);
     KiteTicker mykiteTicker;
-
-    Instrument instrument;
 
 
     @Override
@@ -80,11 +78,11 @@ public class Main4Activity extends AppCompatActivity {
         myDb = new MyDataBase(this);
         final Intent intent = getIntent();
         request_token = intent.getStringExtra("request_token");
-        final Mynotificationmanager mynotificationmanager = new Mynotificationmanager(this);
         myDb = new MyDataBase(this);
         Cursor cursor = getAllItems();
         fetchDataFromSQL(cursor);
         Log.d("fetchDataFromSQL"," "+Stock_Name);
+
         final Myasync myasync = new Myasync();
         myasync.execute("me");
 
@@ -147,7 +145,8 @@ public class Main4Activity extends AppCompatActivity {
     private void fetchDataFromSQL(Cursor curs) {
         if (curs != null) {
             int i = 0;
-            while (curs.moveToNext()) {
+            while(curs.moveToNext()) {
+                Log.d("fetchdatafromSql"," error"+curs.getString(curs.getColumnIndex(MyDataBase.Col_2)));
                 Stock_Name.add(i,curs.getString(curs.getColumnIndex(MyDataBase.Col_2)));
                 Target.add(i,Float.parseFloat(curs.getString(curs.getColumnIndex(MyDataBase.Col_3))));
                 Stop_Loss.add(i,Float.parseFloat(curs.getString(curs.getColumnIndex(MyDataBase.Col_4))));
@@ -168,7 +167,7 @@ public class Main4Activity extends AppCompatActivity {
     public class Myasync extends AsyncTask<String , Void, Void> {
         @Override
         protected void onPreExecute() {
-            kiteSdk.setUserId("QM7226");
+            kiteSdk.setUserId("");
         }
 
         @Override
@@ -221,15 +220,14 @@ public class Main4Activity extends AppCompatActivity {
             mykiteTicker.setOnConnectedListener(new OnConnect() {
                 @Override
                 public void onConnected() {
-                    mykiteTicker.subscribe(testtoken);
                     Log.d("Connected","We are in connected");
-
-//                try {
-//                    mapToken(InstrumentT);
-//                } catch (IOException | KiteException | JSONException e) {
-//                    e.printStackTrace();
-//                }
-//                mykiteTicker.subscribe(InstrumentToken);
+                    try {
+                        mapToken();
+                        mykiteTicker.subscribe(InstrumentTokendb);
+                    } catch (IOException | JSONException | KiteException e) {
+                        e.printStackTrace();
+                        Toast.makeText(getApplicationContext(),"Mapping Failed",Toast.LENGTH_LONG).show();
+                    }
                 }
             });
 
@@ -238,25 +236,22 @@ public class Main4Activity extends AppCompatActivity {
                 public void onTicks(ArrayList<Tick> arrayList) {
                     Log.d("Ticks"," We are here"+arrayList.size());
                 int i;
-                for (i=0;i<data.length;i++){
-
-//                    String Stock_Name = data[i][1];
-//                    Long tok = Long.parseLong(data[i][4]);
-//                    float tgt = Float.parseFloat(data[i][2]);
-//                    float stpl = Float.parseFloat(data[i][3]);
-//
-//                    int j=0;
-//                    for(j=0;j<arrayList.size();j++){
-//                        if(tok == (((arrayList.get(j).getInstrumentToken())))){
-//                            if (tgt<=arrayList.get(j).getClosePrice()){
-//                                mynotificationmanager.showNotification(Stock_Name,"Target "+tgt+" Hit",intent);
-//                            }else{
-//                                if (stpl>=arrayList.get(j).getClosePrice()){
-//                                    mynotificationmanager.showNotification(Stock_Name,"Target "+stpl+" Hit",intent);
-//                            }
-//                        }
-//                    }
-//                }
+                for (i=0;i<Stock_Name.size();i++){
+                    int j=0;
+                    Log.d("setOnTickerArrival"," We are here in for loop");
+                    for(j=0;j<arrayList.size();j++){
+                        if(InstrumentTokendb.get(i) == (arrayList.get(j).getInstrumentToken())){
+                            if (Target.get(i)<=arrayList.get(j).getClosePrice()|DONE==1){
+                                mynotificationmanager.showNotification(Stock_Name.get(i),"Target "+Target.get(i)+" Hit",new Intent(getApplicationContext(),Main4Activity.class));
+                                DONE=0;
+                            }else{
+                                if (Stop_Loss.get(i)>=arrayList.get(j).getClosePrice()|DONE==1){
+                                    mynotificationmanager.showNotification(Stock_Name.get(i),"Target "+Stop_Loss.get(i)+" Hit",new Intent(getApplicationContext(),Main4Activity.class));
+                                    DONE=0;
+                                }
+                        }
+                    }
+                }
             }
                 }
             });
@@ -289,19 +284,18 @@ public class Main4Activity extends AppCompatActivity {
 
     }
 
-    private ArrayList<Long> mapToken(String[] ins) throws IOException, JSONException, KiteException {
+    private void mapToken() throws IOException, JSONException, KiteException {
         final List<Instrument> instruments = kiteSdk.getInstruments("NSE");
-        int i = 0;
-        for (i=0;i<ins.length;i++){
+        int i;
+        Log.d("mapToken","Token is"+Stock_Name.get(0));
+        for (i=0;i<Stock_Name.size();i++){
             int j=0;
             for(j=0;j<instruments.size();j++){
-                if(ins[i].equals(instruments.get(j).name)){
-                    InstrumentToken.set(i, instruments.get(j).getInstrument_token());
-                    data[i][4] = String.valueOf(instruments.get(j).getInstrument_token());
+                if(Stock_Name.get(i).equals(instruments.get(j).tradingsymbol)){
+                    InstrumentTokendb.set(i, instruments.get(j).getInstrument_token());
                 }
-
             }
         }
-        return InstrumentToken;
+        Log.d("mapToken","Token is"+InstrumentTokendb.get(0));
     }
 }

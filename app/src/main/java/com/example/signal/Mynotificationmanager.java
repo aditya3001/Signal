@@ -15,7 +15,7 @@ public class Mynotificationmanager {
     public static final int Notification_id = 0;
     public static final String CHANNEL_ID = "id";
 
-    public Mynotificationmanager(Context cxt){
+    public Mynotificationmanager(Context ctx){
         this.ctx = ctx;
     }
 

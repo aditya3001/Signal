@@ -116,11 +116,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendTokentoServer(){
-        Log.d("sendTokentoServer","We are in sendTokentoServer");
         final String email_id = email.getText().toString();
-        Log.d("sendTokentoServer","We got the email");
         final SharedPrefManager sharedPrefManager = new SharedPrefManager(getApplicationContext());
-        Log.d("sendTokentoServer","We got the token "+ getSharedPreferences(Key_Access_Token,Context.MODE_PRIVATE));
 
         if (TextUtils.isEmpty(email_id)){
             Toast.makeText(this,"Enter your email Please!", Toast.LENGTH_LONG).show();

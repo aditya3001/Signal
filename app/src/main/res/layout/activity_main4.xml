@@ -23,7 +23,7 @@
             app:layout_constraintHorizontal_bias="0.045"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.05" />
+            app:layout_constraintVertical_bias="0.041" />
 
         <TextView
             android:id="@+id/textView2"
@@ -45,8 +45,9 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="120dp"
             android:layout_marginBottom="34dp"
-            android:text="Company"
+            android:text="STOCK SYMBOL"
             app:layout_constraintBottom_toTopOf="@+id/textView3"
+            app:layout_constraintEnd_toStartOf="@+id/editTextCompanyName"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -68,9 +69,11 @@
             android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="32dp"
             android:layout_marginTop="64dp"
-            android:text="stop loss"
+            android:text="STOP LOSS"
+            app:layout_constraintEnd_toStartOf="@+id/stopLossValue"
+            app:layout_constraintHorizontal_bias="0.383"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView" />
 
@@ -92,9 +95,11 @@
             android:id="@+id/textView4"
             android:layout_width="61dp"
             android:layout_height="26dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="47dp"
-            android:text="target"
+            android:layout_marginStart="70dp"
+            android:layout_marginTop="48dp"
+            android:text="TARGET"
+            app:layout_constraintEnd_toStartOf="@+id/targetValue"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
@@ -102,8 +107,7 @@
             android:id="@+id/targetValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:layout_marginEnd="1dp"
+            android:layout_marginTop="24dp"
             android:ems="10"
             android:hint="value"
             android:inputType="textPersonName"
@@ -114,10 +118,10 @@
             android:id="@+id/sendButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Send"
+            android:text="ADD TO SUBSCRIBE"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.238"
+            app:layout_constraintHorizontal_bias="0.176"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.694" />
@@ -138,7 +142,7 @@
             android:id="@+id/button3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Details"
+            android:text="SEE DETAILS"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.486"
