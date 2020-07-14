@@ -47,9 +47,12 @@ public class SignalAdapter extends RecyclerView.Adapter<SignalAdapter.SignalView
         String company = mCursor.getString(mCursor.getColumnIndex(MyDataBase.Col_2));
         String target = mCursor.getString(mCursor.getColumnIndex(MyDataBase.Col_3));
         String stopLoss = mCursor.getString(mCursor.getColumnIndex(MyDataBase.Col_4));
+        long id = mCursor.getLong(mCursor.getColumnIndex(MyDataBase.Col_1));
+
         holder.companyName.setText(company);
         holder.target.setText(target);
         holder.stopLoss.setText(stopLoss);
+        holder.itemView.setTag(id);
     }
 
     @Override
