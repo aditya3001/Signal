@@ -50,7 +50,7 @@ public class Main4Activity extends AppCompatActivity {
     private String[][] data;
     KiteConnect kiteSdk = new KiteConnect("o2u3tpulm3z3agny");
     User user = null;
-    private String AccessToken;
+    private String AccessToken = "";
     float Current_balance;
     TextView textview1,textview2;
 
@@ -64,7 +64,7 @@ public class Main4Activity extends AppCompatActivity {
 
     private String api_secret_key = new String("");  //need to keep it hidden
 
-    String public_token;
+    String public_token="";
     MyDataBase myDb;
 
     KiteTicker mykiteTicker;
@@ -101,10 +101,12 @@ public class Main4Activity extends AppCompatActivity {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 String companyName = editCompanyName.getText().toString();
                 String stopLoss = stopLossValue.getText().toString();
                 String target = targetValue.getText().toString();
                 if(myDb.insertData(companyName,target,stopLoss)){
+                    
                     finish();
                     overridePendingTransition(0, 0);
                     startActivity(getIntent());
@@ -210,8 +212,10 @@ public class Main4Activity extends AppCompatActivity {
             }
             textview1 = findViewById(R.id.textView1);
             textview2 = findViewById(R.id.textView2);
-            public_token = user.publicToken;
-            AccessToken = user.accessToken;
+            if(user!=null) {
+                public_token = user.publicToken;
+                AccessToken = user.accessToken;
+            }
             kiteSdk.setAccessToken(AccessToken);
             kiteSdk.setPublicToken(public_token);
             Margin margin = null;
