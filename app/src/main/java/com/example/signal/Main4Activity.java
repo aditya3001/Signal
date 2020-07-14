@@ -174,7 +174,7 @@ public class Main4Activity extends AppCompatActivity {
         @Override
         protected Void doInBackground(String... strings) {
             try {
-                String api_secret_key = "4lfq1bmm65vl0q37jslr1kzwyknae202";
+                String api_secret_key = "";
 
                 user = kiteSdk.generateSession(request_token, api_secret_key);
 
