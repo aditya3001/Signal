@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 public class MyDataBase extends SQLiteOpenHelper {
     public static final String Db_Name = "App_Db";
     public static final String Tb_Name = "Input_Details";
-    public static final String Col_1 = "Id";
+    public static final String Col_1 = "ID";
     public static final String Col_2 = "Stock_Name";
     public static final String Col_3 = "Target";
     public static final String Col_4 = "Stop_Loss";
@@ -64,4 +64,13 @@ public class MyDataBase extends SQLiteOpenHelper {
         }
         return res;
     }
-}
+    public void deleteData(long id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        try {
+            db.delete(Tb_Name,
+                    Col_1 + "=" + id, null);
+        } catch (Exception e) {
+            Log.d("DATABASE DELETE", e.toString());
+        }
+    }
+    }

@@ -4,21 +4,21 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp">
 
-    <TextView android:background="#DAE8FC" android:padding="5dp"
+    <TextView
         android:id="@+id/textview_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="Empty Item"
         android:textSize="30sp" />
-    <TextView android:background="#DAE8FC" android:padding="5dp"
+    <TextView
         android:id="@+id/textview_target"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="0"
         android:layout_marginStart="8dp"
         android:textSize="30sp" />
-    <TextView android:background="#DAE8FC" android:padding="5dp"
+    <TextView
         android:id="@+id/textview_stoploss"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
