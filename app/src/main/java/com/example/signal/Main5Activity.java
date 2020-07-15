@@ -42,6 +42,7 @@ public class Main5Activity extends AppCompatActivity {
                 new AlertDialog.Builder(viewHolder.itemView.getContext())
                         .setMessage("Are you sure?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
                             public void onClick(DialogInterface dialog, int id) {
                                 removeItem((long) viewHolder.itemView.getTag());
                             }
@@ -53,6 +54,7 @@ public class Main5Activity extends AppCompatActivity {
                         })
                         .create()
                         .show();
+
             }
 
         }).attachToRecyclerView(recyclerView);
