@@ -45,8 +45,6 @@ public class Main3Activity extends AppCompatActivity {
         Intent intent = getIntent();
         String website = intent.getStringExtra("links");
 
-        KiteConnect kiteSdk = new KiteConnect("tjcby5dbku38j51o");
-
         web1.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageFinished(WebView view, String url) {
@@ -56,10 +54,7 @@ public class Main3Activity extends AppCompatActivity {
                     Log.d("Parsed",Request_token);
                     Toast.makeText(getApplicationContext(),"Successfully Logged In",Toast.LENGTH_LONG).show();
                     intent_1.putExtra("request_token",  Request_token);
-                    //intent_1.putExtra("kite1", (Parcelable) kiteSdk);
-                    //intent_1.putExtra("profile", (Parcelable) kiteSdk.getProfile());
                     startActivity(intent_1);
-
                 }else {
                     super.onPageFinished(view, url);
                 }
@@ -84,8 +79,6 @@ public class Main3Activity extends AppCompatActivity {
                 }else {
                     Request_token = url.substring(request_token_index, index_2);
                 }
-                Log.d("In parse_url",Status);
-                Log.d("In parse_url",Request_token);
             }
 
 

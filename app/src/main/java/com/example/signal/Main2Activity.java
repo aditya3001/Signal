@@ -24,7 +24,7 @@ import java.util.List;
 public class Main2Activity extends AppCompatActivity {
     private TextView txt;
     private Button signin;
-    public KiteConnect kite = new KiteConnect("o2u3tpulm3z3agny");
+    public KiteConnect kite;
 //    MyFireBaseMessagingManager myFireBaseMessagingManager = new MyFireBaseMessagingManager();
 //    private List<String> title;
 //    private List<String> body ;
@@ -39,6 +39,7 @@ public class Main2Activity extends AppCompatActivity {
         Intent i = getIntent();
         signin = findViewById(R.id.button2);
 //        listview = findViewById(R.id.listview);
+        kite = new KiteConnect(getString(R.string.apikey));
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -46,8 +47,7 @@ public class Main2Activity extends AppCompatActivity {
 
             }
         });
-        kite.setUserId("QM7226");
-
+        kite.setUserId(getString(R.string.userid));
 //        title = myFireBaseMessagingManager.title;
 //        body = myFireBaseMessagingManager.body;
 //        if (title.size() > 0) {

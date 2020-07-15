@@ -1,6 +1,10 @@
 package com.example.signal;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.os.AsyncTask;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -42,18 +46,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.example.signal.Mynotificationmanager.CHANNEL_ID;
+
 public class Main4Activity extends AppCompatActivity {
     private String Profile_name;
     private String request_token;
     private ArrayList<Long> InstrumentToken;
     private String[][] data;
-    KiteConnect kiteSdk = new KiteConnect("o2u3tpulm3z3agny");
+    KiteConnect kiteSdk;
     User user = null;
     private String AccessToken = "";
     float Current_balance;
     TextView textview1,textview2;
-    ArrayList<Long> testtoken = new ArrayList<Long>(Arrays.asList((long)1207553, 2714625L));
-
     ArrayList<String> Stock_Name = new ArrayList<String>();
     ArrayList<Float> Target = new ArrayList<Float>();
     ArrayList<Float> Stop_Loss = new ArrayList<Float>();
@@ -82,7 +86,7 @@ public class Main4Activity extends AppCompatActivity {
         Cursor cursor = getAllItems();
         fetchDataFromSQL(cursor);
         Log.d("fetchDataFromSQL"," "+Stock_Name);
-
+        kiteSdk = new KiteConnect(getString(R.string.apikey));
         final Myasync myasync = new Myasync();
         myasync.execute("me");
 
@@ -132,7 +136,7 @@ public class Main4Activity extends AppCompatActivity {
                     Flag = 0;
                     Toast.makeText(getApplicationContext(),"Disconnected",Toast.LENGTH_LONG).show();
                     myasync1.cancel(true);
-                    mykiteTicker.unsubscribe(testtoken);
+                    mykiteTicker.unsubscribe(InstrumentTokendb);
                     mykiteTicker.disconnect();
                 }
             }else{
@@ -167,13 +171,13 @@ public class Main4Activity extends AppCompatActivity {
     public class Myasync extends AsyncTask<String , Void, Void> {
         @Override
         protected void onPreExecute() {
-            kiteSdk.setUserId("");
+            kiteSdk.setUserId(getString(R.string.userid));
         }
 
         @Override
         protected Void doInBackground(String... strings) {
             try {
-                String api_secret_key = "";
+                String api_secret_key = getString(R.string.secret);
 
                 user = kiteSdk.generateSession(request_token, api_secret_key);
 
@@ -235,11 +239,12 @@ public class Main4Activity extends AppCompatActivity {
                 @Override
                 public void onTicks(ArrayList<Tick> arrayList) {
                     Log.d("Ticks"," We are here"+arrayList.size());
+
                 int i;
                 for (i=0;i<Stock_Name.size();i++){
                     int j=0;
-                    Log.d("setOnTickerArrival"," We are here in for loop");
                     for(j=0;j<arrayList.size();j++){
+                        Log.d("Ticks"," We are in for loop");
                         if(InstrumentTokendb.get(i) == (arrayList.get(j).getInstrumentToken())){
                             if (Target.get(i)<=arrayList.get(j).getClosePrice()|DONE==1){
                                 mynotificationmanager.showNotification(Stock_Name.get(i),"Target "+Target.get(i)+" Hit",new Intent(getApplicationContext(),Main4Activity.class));
@@ -253,6 +258,7 @@ public class Main4Activity extends AppCompatActivity {
                     }
                 }
             }
+
                 }
             });
         }
