@@ -10,6 +10,7 @@ import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.chaquo.python.PyObject;
@@ -17,11 +18,18 @@ import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
 import com.zerodhatech.kiteconnect.KiteConnect;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Main2Activity extends AppCompatActivity {
     private TextView txt;
     private Button signin;
-    public KiteConnect kite = new KiteConnect("o2u3tpulm3z3agny");
-
+    public KiteConnect kite;
+//    MyFireBaseMessagingManager myFireBaseMessagingManager = new MyFireBaseMessagingManager();
+//    private List<String> title;
+//    private List<String> body ;
+//    private ListView listview;
+//    ArrayList<JavaLayout> items = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +37,9 @@ public class Main2Activity extends AppCompatActivity {
         setContentView(R.layout.activity_main2);
 
         Intent i = getIntent();
-        txt = findViewById(R.id.textPython);
         signin = findViewById(R.id.button2);
+//        listview = findViewById(R.id.listview);
+        kite = new KiteConnect(getString(R.string.apikey));
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -38,12 +47,17 @@ public class Main2Activity extends AppCompatActivity {
 
             }
         });
-        kite.setUserId(getString(R.string.project_id));
-
-
-//        String str = pythonprocess();
-        //        startPython();
-//        txt.setText(str);
+        kite.setUserId(getString(R.string.userid));
+//        title = myFireBaseMessagingManager.title;
+//        body = myFireBaseMessagingManager.body;
+//        if (title.size() > 0) {
+//            int j;
+//            for (j = 0; j < title.size(); j++) {
+//                items.add(new JavaLayout(title.get(j), body.get(j)));
+//            }
+//            listview.setAdapter(new CustomAdapter(Main2Activity.this, R.layout.my_list_item, items));
+//        }
+//
 
 
     }
@@ -54,18 +68,4 @@ public class Main2Activity extends AppCompatActivity {
         intent.putExtra("links",url);
         startActivity(intent);
     }
-
-//    private void startPython() {
-//        if (! Python.isStarted()) {
-//            Python.start(new AndroidPlatform(this));
-//        }
-//    }
-
-//    private String pythonprocess(){
-//        Python ins = Python.getInstance();
-//        PyObject val = ins.getModule("livevol");
-//        Log.d("Python","We are here");
-//        return val.callAttr("hello","aditya").toString();
-//
-//    }
 }

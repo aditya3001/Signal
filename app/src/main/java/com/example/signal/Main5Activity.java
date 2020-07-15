@@ -42,17 +42,19 @@ public class Main5Activity extends AppCompatActivity {
                 new AlertDialog.Builder(viewHolder.itemView.getContext())
                         .setMessage("Are you sure?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        removeItem((long) viewHolder.itemView.getTag());
-                                    }
-                                    })
+
+                            public void onClick(DialogInterface dialog, int id) {
+                                removeItem((long) viewHolder.itemView.getTag());
+                            }
+                        })
                         .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            mAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
-                                        }
-                                    })
-                                            .create()
-                                            .show();
+                            public void onClick(DialogInterface dialog, int id) {
+                                mAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
+                            }
+                        })
+                        .create()
+                        .show();
+
             }
 
         }).attachToRecyclerView(recyclerView);

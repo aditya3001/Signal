@@ -58,7 +58,7 @@ public class SignalAdapter extends RecyclerView.Adapter<SignalAdapter.SignalView
     @Override
     public int getItemCount() {
         if(mCursor!=null)
-        return mCursor.getCount();
+            return mCursor.getCount();
         return 0;
     }
     public void swapCursor(Cursor newCursor){

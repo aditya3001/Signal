@@ -9,8 +9,12 @@ import androidx.core.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.ArrayList;
+
 public class MyFireBaseMessagingManager extends FirebaseMessagingService {
     private static final String TAG = "FCMMessage";
+    public ArrayList<String> title = new ArrayList<>();
+    public ArrayList<String> body = new ArrayList<>();
 
 
     @Override
@@ -39,7 +43,8 @@ public class MyFireBaseMessagingManager extends FirebaseMessagingService {
 
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
-
+            title.add(remoteMessage.getFrom());
+            body.add(remoteMessage.getNotification().getBody());
             Log.d("TAG", "Message Notification Body: " + remoteMessage.getNotification().getBody());
             notifyuser(remoteMessage.getFrom(),remoteMessage.getNotification().getBody());
         }
@@ -50,7 +55,7 @@ public class MyFireBaseMessagingManager extends FirebaseMessagingService {
 
     public void notifyuser(String from,String notification){
         Mynotificationmanager mynotificationmanager = new Mynotificationmanager(getApplicationContext());
-        mynotificationmanager.showNotification(from,notification,new Intent(getApplicationContext(),MainActivity.class));
+        mynotificationmanager.showNotification(from,notification,new Intent(getApplicationContext(),Main2Activity.class));
     }
 
 }

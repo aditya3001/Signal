@@ -57,7 +57,7 @@ public class MyDataBase extends SQLiteOpenHelper {
     public Cursor getData(){
         SQLiteDatabase db = this.getWritableDatabase();
         try {
-             res = db.query(Tb_Name, null,null,null,null,null,Col_6 + " DESC");
+            res = db.query(Tb_Name, null,null,null,null,null,Col_6 + " DESC");
 
         }catch(SQLException e) {
             Log.d("DATABASE", e.toString());
@@ -73,4 +73,6 @@ public class MyDataBase extends SQLiteOpenHelper {
             Log.d("DATABASE DELETE", e.toString());
         }
     }
-    }
+
+}
+

@@ -18,11 +18,12 @@
         android:text="0"
         android:layout_marginStart="8dp"
         android:textSize="30sp" />
+
     <TextView
         android:id="@+id/textview_stoploss"
-        android:layout_width="wrap_content"
+        android:layout_width="54dp"
         android:layout_height="wrap_content"
-        android:text="0"
         android:layout_marginStart="8dp"
+        android:text="0"
         android:textSize="30sp" />
 </LinearLayout>
