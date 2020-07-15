@@ -1,10 +1,13 @@
 package com.example.signal;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.os.AsyncTask;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,6 +15,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -51,7 +55,6 @@ import static com.example.signal.Mynotificationmanager.CHANNEL_ID;
 public class Main4Activity extends AppCompatActivity {
     private String Profile_name;
     private String request_token;
-    private ArrayList<Long> InstrumentToken;
     private String[][] data;
     KiteConnect kiteSdk;
     User user = null;
@@ -71,7 +74,7 @@ public class Main4Activity extends AppCompatActivity {
     public int DONE=1;
     String public_token="";
     MyDataBase myDb;
-    final Mynotificationmanager mynotificationmanager = new Mynotificationmanager(this);
+    notifyMe notify;
     KiteTicker mykiteTicker;
 
 
@@ -80,6 +83,7 @@ public class Main4Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main4);
         myDb = new MyDataBase(this);
+        notify = new notifyMe(this);
         final Intent intent = getIntent();
         request_token = intent.getStringExtra("request_token");
         myDb = new MyDataBase(this);
@@ -100,18 +104,19 @@ public class Main4Activity extends AppCompatActivity {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 String companyName = editCompanyName.getText().toString();
                 String stopLoss = stopLossValue.getText().toString();
                 String target = targetValue.getText().toString();
-                if(myDb.insertData(companyName,target,stopLoss)){
-                    
-                    finish();
-                    overridePendingTransition(0, 0);
-                    startActivity(getIntent());
-                    overridePendingTransition(0, 0);
+                if(companyName.isEmpty() || stopLoss.isEmpty() || target.isEmpty()){
+                    Toast.makeText(getApplicationContext(),"Empty Field Not Valid",Toast.LENGTH_LONG).show();
+                }else {
+                    if (myDb.insertData(companyName, target, stopLoss)) {
+                        finish();
+                        overridePendingTransition(0, 0);
+                        startActivity(getIntent());
+                        overridePendingTransition(0, 0);
+                    }
                 }
-
             }
         });
 
@@ -122,6 +127,7 @@ public class Main4Activity extends AppCompatActivity {
                 startActivity(intent1);
             }
         });
+
         final Myasync1 myasync1 = new Myasync1();
 
         switchbutton1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -149,8 +155,8 @@ public class Main4Activity extends AppCompatActivity {
     private void fetchDataFromSQL(Cursor curs) {
         if (curs != null) {
             int i = 0;
-            while(curs.moveToNext()) {
-                Log.d("fetchdatafromSql"," error"+curs.getString(curs.getColumnIndex(MyDataBase.Col_2)));
+            while(curs.moveToNext() && !curs.getString(curs.getColumnIndex(MyDataBase.Col_2)).isEmpty()) {
+                Log.d("fetchdatafromSql",""+curs.getString(curs.getColumnIndex(MyDataBase.Col_2)));
                 Stock_Name.add(i,curs.getString(curs.getColumnIndex(MyDataBase.Col_2)));
                 Target.add(i,Float.parseFloat(curs.getString(curs.getColumnIndex(MyDataBase.Col_3))));
                 Stop_Loss.add(i,Float.parseFloat(curs.getString(curs.getColumnIndex(MyDataBase.Col_4))));
@@ -178,9 +184,7 @@ public class Main4Activity extends AppCompatActivity {
         protected Void doInBackground(String... strings) {
             try {
                 String api_secret_key = getString(R.string.secret);
-
                 user = kiteSdk.generateSession(request_token, api_secret_key);
-
             } catch (KiteException | IOException | JSONException e) {
                 e.printStackTrace();
             }
@@ -210,10 +214,8 @@ public class Main4Activity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-
             textview1.setText("Hi: "+Profile_name);
             textview2.setText("Amount "+Current_balance);
-
         }
     }
     public class Myasync1 extends AsyncTask<String , Void, Void> {
@@ -236,29 +238,49 @@ public class Main4Activity extends AppCompatActivity {
             });
 
             mykiteTicker.setOnTickerArrivalListener(new OnTicks() {
+                @RequiresApi(api = Build.VERSION_CODES.O)
                 @Override
                 public void onTicks(ArrayList<Tick> arrayList) {
                     Log.d("Ticks"," We are here"+arrayList.size());
 
+                    if (DONE==1){
+                        notify.showNotification("Signal","Check");
+                        DONE=0;
+                    }
+//                    int i;
+//                    for (i=0;i<Stock_Name.size();i++) {
+//                        int j = 0;
+//                        for (j = 0; j < 4; j++) {
+//                            Log.d("Ticks", " We are in for loop"+DONE);
+////                        if(InstrumentTokendb.get(i) == (arrayList.get(j).getInstrumentToken()))
+//                            {
+//                                if (Target.get(i) <= 100 && DONE == 1) {
+//                                    notify.showNotification(Stock_Name.get(i), "Target " + Target.get(i) + " Hit");
+//                                    DONE = 0;
+//                                } else {
+//                                    if (Stop_Loss.get(i) >= 100 && DONE == 1) {
+//                                        notify.showNotification(Stock_Name.get(i), "Stop_Loss " + Target.get(i) + " Hit");
+//                                        DONE = 0;
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
                 int i;
                 for (i=0;i<Stock_Name.size();i++){
                     int j=0;
                     for(j=0;j<arrayList.size();j++){
-                        Log.d("Ticks"," We are in for loop");
+                        Log.d("Ticks"," We are in for loop"+DONE);
                         if(InstrumentTokendb.get(i) == (arrayList.get(j).getInstrumentToken())){
-                            if (Target.get(i)<=arrayList.get(j).getClosePrice()|DONE==1){
-                                mynotificationmanager.showNotification(Stock_Name.get(i),"Target "+Target.get(i)+" Hit",new Intent(getApplicationContext(),Main4Activity.class));
-                                DONE=0;
+                            if (Target.get(i)<=arrayList.get(j).getClosePrice()&&DONE==1){
+                                notify.showNotification(Stock_Name.get(i), "Target " + Target.get(i) + " Hit");                                DONE=0;
                             }else{
-                                if (Stop_Loss.get(i)>=arrayList.get(j).getClosePrice()|DONE==1){
-                                    mynotificationmanager.showNotification(Stock_Name.get(i),"Target "+Stop_Loss.get(i)+" Hit",new Intent(getApplicationContext(),Main4Activity.class));
-                                    DONE=0;
-                                }
+                                if (Stop_Loss.get(i)>=arrayList.get(j).getClosePrice()&&DONE==1){
+                                    notify.showNotification(Stock_Name.get(i), "Stop_Loss " + Stop_Loss.get(i) + " Hit");                                }
                         }
                     }
                 }
             }
-
                 }
             });
         }
@@ -276,8 +298,6 @@ public class Main4Activity extends AppCompatActivity {
             }else if (Flag==0){
                 mykiteTicker.disconnect();
             }
-
-
             return null;
         }
 
@@ -287,9 +307,7 @@ public class Main4Activity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"Connected",Toast.LENGTH_LONG).show();
             }
         }
-
     }
-
     private void mapToken() throws IOException, JSONException, KiteException {
         final List<Instrument> instruments = kiteSdk.getInstruments("NSE");
         int i;
