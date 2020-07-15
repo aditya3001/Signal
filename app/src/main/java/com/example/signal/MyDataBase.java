@@ -73,4 +73,6 @@ public class MyDataBase extends SQLiteOpenHelper {
             Log.d("DATABASE DELETE", e.toString());
         }
     }
+
 }
+
