@@ -52,6 +52,7 @@ public class MyDataBase extends SQLiteOpenHelper {
         contentValues.put(Col_4,Stp_ls);
         contentValues.put(Col_8,Action);
         contentValues.put(Col_7,"Neutral");
+
         long result = db.insert(Tb_Name,null,contentValues);
         if(result == -1){
             return false;
