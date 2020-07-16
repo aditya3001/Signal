@@ -1,7 +1,4 @@
 <resources>
     <string name="app_name">Signal</string>
     <string name="amount">\"Woah! You have got this much money: \"</string>
-    <string name="secret">4lfq1bmm65vl0q37jslr1kzwyknae202</string>
-    <string name="userid">QM7226</string>
-    <string name="apikey">o2u3tpulm3z3agny</string>
 </resources>
