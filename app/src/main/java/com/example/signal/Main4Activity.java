@@ -65,7 +65,7 @@ public class Main4Activity extends AppCompatActivity {
     ArrayList<Float> Target = new ArrayList<Float>();
     ArrayList<Float> Stop_Loss = new ArrayList<Float>();
     ArrayList<Long> InstrumentTokendb = new ArrayList<Long>();
-
+    ArrayList<Long> Ids = new ArrayList<>();
     EditText editCompanyName,stopLossValue,targetValue;
     Button sendButton;
     Button seeDetails;
@@ -111,10 +111,9 @@ public class Main4Activity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(),"Empty Field Not Valid",Toast.LENGTH_LONG).show();
                 }else {
                     if (myDb.insertData(companyName, target, stopLoss)) {
-                        finish();
-                        overridePendingTransition(0, 0);
-                        startActivity(getIntent());
-                        overridePendingTransition(0, 0);
+                        editCompanyName.getText().clear();
+                        stopLossValue.getText().clear();
+                        targetValue.getText().clear();
                     }
                 }
             }
@@ -155,13 +154,22 @@ public class Main4Activity extends AppCompatActivity {
     private void fetchDataFromSQL(Cursor curs) {
         if (curs != null) {
             int i = 0;
-            while(curs.moveToNext() && !curs.getString(curs.getColumnIndex(MyDataBase.Col_2)).isEmpty()) {
-                Log.d("fetchdatafromSql",""+curs.getString(curs.getColumnIndex(MyDataBase.Col_2)));
-                Stock_Name.add(i,curs.getString(curs.getColumnIndex(MyDataBase.Col_2)));
-                Target.add(i,Float.parseFloat(curs.getString(curs.getColumnIndex(MyDataBase.Col_3))));
-                Stop_Loss.add(i,Float.parseFloat(curs.getString(curs.getColumnIndex(MyDataBase.Col_4))));
-                InstrumentTokendb.add(i,Long.parseLong(curs.getString(curs.getColumnIndex(MyDataBase.Col_5))));
+            while(curs.moveToNext()) {
+                try {
+                    Log.d("fetchdatafromSql", " error" + curs.getString(curs.getColumnIndex(MyDataBase.Col_2)));
+                    Stock_Name.add(i, curs.getString(curs.getColumnIndex(MyDataBase.Col_2)));
+                    Target.add(i, Float.parseFloat(curs.getString(curs.getColumnIndex(MyDataBase.Col_3))));
+                    Stop_Loss.add(i, Float.parseFloat(curs.getString(curs.getColumnIndex(MyDataBase.Col_4))));
+                    InstrumentTokendb.add(i, Long.parseLong(curs.getString(curs.getColumnIndex(MyDataBase.Col_5))));
+                    Ids.add(i,curs.getLong(curs.getColumnIndex(MyDataBase.Col_1)));
+
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+
                 }
+            }
+
+
                 i++;
                 curs.moveToNext();
             }
@@ -269,14 +277,20 @@ public class Main4Activity extends AppCompatActivity {
                 int i;
                 for (i=0;i<Stock_Name.size();i++){
                     int j=0;
+
                     for(j=0;j<arrayList.size();j++){
                         Log.d("Ticks"," We are in for loop"+DONE);
                         if(InstrumentTokendb.get(i) == (arrayList.get(j).getInstrumentToken())){
                             if (Target.get(i)<=arrayList.get(j).getClosePrice()&&DONE==1){
-                                notify.showNotification(Stock_Name.get(i), "Target " + Target.get(i) + " Hit");                                DONE=0;
+                                notify.showNotification(Stock_Name.get(i), "Target " + Target.get(i) + " Hit");
+                                myDb.updateData(Ids.get(i), Stock_Name.get(i), Float.toString(Target.get(i)), Float.toString(Stop_Loss.get(i)), "Target");
+                                DONE=0;
                             }else{
                                 if (Stop_Loss.get(i)>=arrayList.get(j).getClosePrice()&&DONE==1){
-                                    notify.showNotification(Stock_Name.get(i), "Stop_Loss " + Stop_Loss.get(i) + " Hit");                                }
+                                    notify.showNotification(Stock_Name.get(i), "Stop_Loss " + Stop_Loss.get(i) + " Hit");
+                                    myDb.updateData(Ids.get(i), Stock_Name.get(i), Float.toString(Target.get(i)), Float.toString(Stop_Loss.get(i)), "Stop Loss");
+                                    DONE=0;
+                                }
                         }
                     }
                 }
