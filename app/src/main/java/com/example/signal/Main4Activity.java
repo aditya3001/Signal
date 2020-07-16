@@ -62,6 +62,7 @@ public class Main4Activity extends AppCompatActivity {
     float Current_balance;
     TextView textview1,textview2;
     ArrayList<String> Stock_Name = new ArrayList<String>();
+    ArrayList<String> HitArray = new ArrayList<String>();
     ArrayList<Float> Target = new ArrayList<Float>();
     ArrayList<Float> Stop_Loss = new ArrayList<Float>();
     ArrayList<Long> InstrumentTokendb = new ArrayList<Long>();
@@ -154,6 +155,7 @@ public class Main4Activity extends AppCompatActivity {
     private void fetchDataFromSQL(Cursor curs) {
         if (curs != null) {
             int i = 0;
+            Stock_Name.clear();Target.clear();Stop_Loss.clear();InstrumentTokendb.clear();Ids.clear();HitArray.clear();
             while(curs.moveToNext()) {
                 try {
                     Log.d("fetchdatafromSql", " error" + curs.getString(curs.getColumnIndex(MyDataBase.Col_2)));
@@ -162,6 +164,7 @@ public class Main4Activity extends AppCompatActivity {
                     Stop_Loss.add(i, Float.parseFloat(curs.getString(curs.getColumnIndex(MyDataBase.Col_4))));
                     InstrumentTokendb.add(i, Long.parseLong(curs.getString(curs.getColumnIndex(MyDataBase.Col_5))));
                     Ids.add(i,curs.getLong(curs.getColumnIndex(MyDataBase.Col_1)));
+                    HitArray.add(i,curs.getString(curs.getColumnIndex(MyDataBase.Col_7)));
 
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
@@ -250,7 +253,8 @@ public class Main4Activity extends AppCompatActivity {
                 @Override
                 public void onTicks(ArrayList<Tick> arrayList) {
                     Log.d("Ticks"," We are here"+arrayList.size());
-
+                    Cursor cursor = getAllItems();
+                    fetchDataFromSQL(cursor);
                     if (DONE==1){
                         notify.showNotification("Signal","Check");
                         DONE=0;
@@ -278,18 +282,19 @@ public class Main4Activity extends AppCompatActivity {
                 for (i=0;i<Stock_Name.size();i++){
                     int j=0;
 
-                    for(j=0;j<arrayList.size();j++){
+//                    for(j=0;j<arrayList.size();j++)
+                    {
                         Log.d("Ticks"," We are in for loop"+DONE);
-                        if(InstrumentTokendb.get(i) == (arrayList.get(j).getInstrumentToken())){
-                            if (Target.get(i)<=arrayList.get(j).getClosePrice()&&DONE==1){
+//                        if(InstrumentTokendb.get(i) == (arrayList.get(j).getInstrumentToken()))
+                        {
+                            if (Target.get(i)<=100 && "Neutral".equalsIgnoreCase(HitArray.get(i))) {
                                 notify.showNotification(Stock_Name.get(i), "Target " + Target.get(i) + " Hit");
                                 myDb.updateData(Ids.get(i), Stock_Name.get(i), Float.toString(Target.get(i)), Float.toString(Stop_Loss.get(i)), "Target");
-                                DONE=0;
+
                             }else{
-                                if (Stop_Loss.get(i)>=arrayList.get(j).getClosePrice()&&DONE==1){
+                                if (Stop_Loss.get(i)>=100 && "Neutral".equalsIgnoreCase(HitArray.get(i))) {
                                     notify.showNotification(Stock_Name.get(i), "Stop_Loss " + Stop_Loss.get(i) + " Hit");
                                     myDb.updateData(Ids.get(i), Stock_Name.get(i), Float.toString(Target.get(i)), Float.toString(Stop_Loss.get(i)), "Stop Loss");
-                                    DONE=0;
                                 }
                         }
                     }
