@@ -65,8 +65,9 @@ public class Main4Activity extends AppCompatActivity {
     ArrayList<Float> Target = new ArrayList<Float>();
     ArrayList<Float> Stop_Loss = new ArrayList<Float>();
     ArrayList<Long> InstrumentTokendb = new ArrayList<Long>();
+    ArrayList<String> ActionTaken = new ArrayList<String>();
 
-    EditText editCompanyName,stopLossValue,targetValue;
+    EditText editCompanyName,stopLossValue,targetValue,actionview;
     Button sendButton;
     Button seeDetails;
     Switch switchbutton1;
@@ -98,6 +99,7 @@ public class Main4Activity extends AppCompatActivity {
         stopLossValue =  (EditText)findViewById(R.id.stopLossValue);
         targetValue = (EditText)findViewById(R.id.targetValue);
         sendButton = (Button)findViewById(R.id.sendButton);
+        actionview = findViewById(R.id.actiontaken);
         switchbutton1 = findViewById(R.id.switch1);
         seeDetails = findViewById(R.id.button3);
 
@@ -107,10 +109,11 @@ public class Main4Activity extends AppCompatActivity {
                 String companyName = editCompanyName.getText().toString();
                 String stopLoss = stopLossValue.getText().toString();
                 String target = targetValue.getText().toString();
-                if(companyName.isEmpty() || stopLoss.isEmpty() || target.isEmpty()){
+                String action = actionview.getText().toString();
+                if(companyName.isEmpty() || stopLoss.isEmpty() || target.isEmpty() || action.isEmpty()){
                     Toast.makeText(getApplicationContext(),"Empty Field Not Valid",Toast.LENGTH_LONG).show();
                 }else {
-                    if (myDb.insertData(companyName, target, stopLoss)) {
+                    if (myDb.insertData(companyName, target, stopLoss,action)) {
                         finish();
                         overridePendingTransition(0, 0);
                         startActivity(getIntent());
@@ -161,15 +164,14 @@ public class Main4Activity extends AppCompatActivity {
                 Target.add(i,Float.parseFloat(curs.getString(curs.getColumnIndex(MyDataBase.Col_3))));
                 Stop_Loss.add(i,Float.parseFloat(curs.getString(curs.getColumnIndex(MyDataBase.Col_4))));
                 InstrumentTokendb.add(i,Long.parseLong(curs.getString(curs.getColumnIndex(MyDataBase.Col_5))));
+                ActionTaken.add(i,curs.getString(curs.getColumnIndex(MyDataBase.Col_7)));
                 }
                 i++;
                 curs.moveToNext();
             }
             curs.close();
+        myDb.close();
         }
-
-
-
 
     private Cursor getAllItems() {
         return myDb.getData();
@@ -241,44 +243,29 @@ public class Main4Activity extends AppCompatActivity {
                 @RequiresApi(api = Build.VERSION_CODES.O)
                 @Override
                 public void onTicks(ArrayList<Tick> arrayList) {
-                    Log.d("Ticks"," We are here"+arrayList.size());
-
-                    if (DONE==1){
-                        notify.showNotification("Signal","Check");
-                        DONE=0;
-                    }
-//                    int i;
-//                    for (i=0;i<Stock_Name.size();i++) {
-//                        int j = 0;
-//                        for (j = 0; j < 4; j++) {
-//                            Log.d("Ticks", " We are in for loop"+DONE);
-////                        if(InstrumentTokendb.get(i) == (arrayList.get(j).getInstrumentToken()))
-//                            {
-//                                if (Target.get(i) <= 100 && DONE == 1) {
-//                                    notify.showNotification(Stock_Name.get(i), "Target " + Target.get(i) + " Hit");
-//                                    DONE = 0;
-//                                } else {
-//                                    if (Stop_Loss.get(i) >= 100 && DONE == 1) {
-//                                        notify.showNotification(Stock_Name.get(i), "Stop_Loss " + Target.get(i) + " Hit");
-//                                        DONE = 0;
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
                 int i;
                 for (i=0;i<Stock_Name.size();i++){
                     int j=0;
                     for(j=0;j<arrayList.size();j++){
-                        Log.d("Ticks"," We are in for loop"+DONE);
-                        if(InstrumentTokendb.get(i) == (arrayList.get(j).getInstrumentToken())){
-                            if (Target.get(i)<=arrayList.get(j).getClosePrice()&&DONE==1){
-                                notify.showNotification(Stock_Name.get(i), "Target " + Target.get(i) + " Hit");                                DONE=0;
-                            }else{
-                                if (Stop_Loss.get(i)>=arrayList.get(j).getClosePrice()&&DONE==1){
-                                    notify.showNotification(Stock_Name.get(i), "Stop_Loss " + Stop_Loss.get(i) + " Hit");                                }
+                        Log.d("Ticks"," We are in for loop"+arrayList.get(j).getLastTradedPrice()+ActionTaken.get(i));
+                        if(InstrumentTokendb.get(i) == (arrayList.get(i).getInstrumentToken()) && ActionTaken.get(i).equals("BUY")){
+                            Log.d("Ticks"," We are in if"+DONE);
+                            if (Target.get(i)<=arrayList.get(j).getLastTradedPrice()&&DONE==1){
+                                notify.showNotification(Stock_Name.get(i), "Target " + Target.get(i) + " Hit");
+                                DONE=0;
+                            }else if(Stop_Loss.get(i)>=arrayList.get(j).getLastTradedPrice()&&DONE==1){
+                                    notify.showNotification(Stock_Name.get(i), "Stop_Loss " + Stop_Loss.get(i) + " Hit");
+                                    DONE = 0;
                         }
-                    }
+                    }else if(InstrumentTokendb.get(i) == (arrayList.get(1).getInstrumentToken()) && ActionTaken.get(i).equals("SELL")){
+                            if (Target.get(i)>=arrayList.get(j).getLastTradedPrice()&&DONE==1){
+                                notify.showNotification(Stock_Name.get(i), "Target " + Target.get(i) + " Hit");
+                                DONE=0;
+                            }else if(Stop_Loss.get(i)<=arrayList.get(j).getLastTradedPrice()&&DONE==1){
+                                notify.showNotification(Stock_Name.get(i), "Stop_Loss " + Stop_Loss.get(i) + " Hit");
+                                DONE = 0;
+                            }
+                        }
                 }
             }
                 }
@@ -311,7 +298,6 @@ public class Main4Activity extends AppCompatActivity {
     private void mapToken() throws IOException, JSONException, KiteException {
         final List<Instrument> instruments = kiteSdk.getInstruments("NSE");
         int i;
-        Log.d("mapToken","Token is"+Stock_Name.get(0));
         for (i=0;i<Stock_Name.size();i++){
             int j=0;
             for(j=0;j<instruments.size();j++){

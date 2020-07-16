@@ -2,8 +2,10 @@ package com.example.signal;
 
 import android.app.Notification;
 import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -17,6 +19,7 @@ public class MyFireBaseMessagingManager extends FirebaseMessagingService {
     public ArrayList<String> body = new ArrayList<>();
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
@@ -50,7 +53,8 @@ public class MyFireBaseMessagingManager extends FirebaseMessagingService {
         // message, here is where that should be initiated. See sendNotification method below.
     }
 
-    public void notifyuser(String from,String notification){
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void notifyuser(String from, String notification){
         Mynotificationmanager mynotificationmanager = new Mynotificationmanager(getApplicationContext());
         mynotificationmanager.showNotification(from,notification,new Intent(getApplicationContext(),Main2Activity.class));
     }
