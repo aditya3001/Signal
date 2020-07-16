@@ -19,7 +19,8 @@ public class MyDataBase extends SQLiteOpenHelper {
     public static final String Col_4 = "Stop_Loss";
     public static final String Col_5 = "Instrument_Token";
     public static final String Col_6 = "Time_Stamp";
-    public static final String Col_7 = "Action_Taken";
+    public static final String Col_8 = "Action_Taken";
+    public static final String Col_7 = "Hit";
 
 
     String[] Stock_name;
@@ -33,7 +34,8 @@ public class MyDataBase extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE "+Tb_Name+" (ID INTEGER PRIMARY KEY AUTOINCREMENT,Stock_Name TEXT,Target float,Stop_Loss float,Instrument_Token long Default 0, Time_Stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, Action_Taken TEXT);");
+        db.execSQL("CREATE TABLE "+Tb_Name+" (ID INTEGER PRIMARY KEY AUTOINCREMENT,Stock_Name TEXT,Target float,Stop_Loss float,Instrument_Token long Default 0, Time_Stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, Hit TEXT, Action_Taken TEXT);");
+
     }
 
     @Override
@@ -48,9 +50,24 @@ public class MyDataBase extends SQLiteOpenHelper {
         contentValues.put(Col_2,StckNme);
         contentValues.put(Col_3,Tgt);
         contentValues.put(Col_4,Stp_ls);
-        contentValues.put(Col_7,Action);
+        contentValues.put(Col_8,Action);
+        contentValues.put(Col_7,"Neutral");
 
         long result = db.insert(Tb_Name,null,contentValues);
+        if(result == -1){
+            return false;
+        }else{
+            return true;
+        }
+    }
+    public boolean updateData(long id,String StckNme, String Tgt,String Stp_ls, String hit ) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Col_2,StckNme);
+        contentValues.put(Col_3,Tgt);
+        contentValues.put(Col_4,Stp_ls);
+        contentValues.put(Col_7,hit);
+        long result = db.update(Tb_Name, contentValues, Col_1 + "=" + id, null);
         if(result == -1){
             return false;
         }else{
