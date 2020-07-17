@@ -8,15 +8,18 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
+
+import java.util.Date;
 
 import static android.provider.Settings.System.getString;
 
 public class Mynotificationmanager {
     private Context ctx;
-    public static final int Notification_id = 0;
+    public static int Notification_id = 0;
     public static final String CHANNEL_ID = "id";
 
     public Mynotificationmanager(Context ctx){
@@ -25,6 +28,9 @@ public class Mynotificationmanager {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void showNotification(String from, String notification, Intent intent){
+        Notification_id = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
+        Log.d("Note "," NOTIFY "+Notification_id);
+
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 ctx,
                 Notification_id,

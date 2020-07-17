@@ -6,17 +6,26 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
+import java.util.Date;
+import java.util.Random;
+
+import static com.example.signal.Mynotificationmanager.Notification_id;
+
 public class notifyMe {
     private Context ctx;
-
     public notifyMe(Context ctx) {
         this.ctx = ctx;
     }
 
     void showNotification(String title, String message) {
+        Random random = new Random();
+        int m = random.nextInt(9999 - 1000) + 1000;
+        Notification_id = m;
+        Log.d("Note "," NOTIFY "+Notification_id);
         NotificationManager mNotificationManager =
                 (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -35,6 +44,6 @@ public class notifyMe {
         Intent intent = new Intent(ctx.getApplicationContext(), Main5Activity.class);
         PendingIntent pi = PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         mBuilder.setContentIntent(pi);
-        mNotificationManager.notify(0, mBuilder.build());
+        mNotificationManager.notify(Notification_id, mBuilder.build());
     }
 }
