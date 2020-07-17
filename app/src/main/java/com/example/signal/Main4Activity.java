@@ -78,7 +78,7 @@ public class Main4Activity extends AppCompatActivity {
     MyDataBase myDb;
     notifyMe notify;
     KiteTicker mykiteTicker;
-
+    String Flip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,16 +108,23 @@ public class Main4Activity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String companyName = editCompanyName.getText().toString();
+                String action = actionview.getText().toString();
+
                 String stopLoss = stopLossValue.getText().toString();
                 String target = targetValue.getText().toString();
-                String action = actionview.getText().toString();
                 if(companyName.isEmpty() || stopLoss.isEmpty() || target.isEmpty() || action.isEmpty()){
                     Toast.makeText(getApplicationContext(),"Empty Field Not Valid",Toast.LENGTH_LONG).show();
                 }else {
+//                    if(action.equals("SELL")){
+//                        Flip = target;
+//                        target = stopLoss;
+//                        stopLoss=Flip;
+//                    }
                     if (myDb.insertData(companyName, target, stopLoss,action)) {
                         editCompanyName.getText().clear();
                         stopLossValue.getText().clear();
                         targetValue.getText().clear();
+                        actionview.getText().clear();
                     }
                 }
             }
@@ -250,23 +257,26 @@ public class Main4Activity extends AppCompatActivity {
                 @RequiresApi(api = Build.VERSION_CODES.O)
                 @Override
                 public void onTicks(ArrayList<Tick> arrayList) {
+                    Log.d("Ticks"," We are tick"+arrayList.size());
                 int i;
                 for (i=0;i<Stock_Name.size();i++){
                     int j=0;
                     for(j=0;j<arrayList.size();j++){
                         Log.d("Ticks"," We are in for loop");
-                        if(InstrumentTokendb.get(i) == (arrayList.get(i).getInstrumentToken()) && ActionTaken.get(i).equals("BUY")){
-                            Log.d("Ticks"," We are in if"+DONE);
-                            if (Target.get(i)<=arrayList.get(j).getLastTradedPrice()&&DONE==1){
+                        if(InstrumentTokendb.get(i) == (arrayList.get(i).getInstrumentToken()) && ActionTaken.get(i).equals("BUY")) {
+                            Log.d("Ticks", " We are in if" + DONE);
+                            if (Target.get(i) <= arrayList.get(j).getLastTradedPrice() && DONE == 1) {
                                 notify.showNotification(Stock_Name.get(i), "Target " + Target.get(i) + " Hit");
                                 myDb.updateData(Ids.get(i), Stock_Name.get(i), Float.toString(Target.get(i)), Float.toString(Stop_Loss.get(i)), "Target");
-                                DONE=0;
-                            }else if(Stop_Loss.get(i)>=arrayList.get(j).getLastTradedPrice()&&DONE==1){
-                                    notify.showNotification(Stock_Name.get(i), "Stop_Loss " + Stop_Loss.get(i) + " Hit");
+                                DONE = 0;
+                            } else if (Stop_Loss.get(i) >= arrayList.get(j).getLastTradedPrice() && DONE == 1) {
+                                notify.showNotification(Stock_Name.get(i), "Stop_Loss " + Stop_Loss.get(i) + " Hit");
                                 myDb.updateData(Ids.get(i), Stock_Name.get(i), Float.toString(Target.get(i)), Float.toString(Stop_Loss.get(i)), "Stop Loss");
                                 DONE = 0;
+                            }
                         }
-                    }else if(InstrumentTokendb.get(i) == (arrayList.get(1).getInstrumentToken()) && ActionTaken.get(i).equals("SELL")){
+                    else if(InstrumentTokendb.get(i) == (arrayList.get(i).getInstrumentToken()) && ActionTaken.get(i).equals("SELL")){
+                            Log.d("Ticks"," We are in if"+ActionTaken.get(i));
                             if (Target.get(i)>=arrayList.get(j).getLastTradedPrice()&&DONE==1){
                                 notify.showNotification(Stock_Name.get(i), "Target " + Target.get(i) + " Hit");
                                 myDb.updateData(Ids.get(i), Stock_Name.get(i), Float.toString(Target.get(i)), Float.toString(Stop_Loss.get(i)), "Target");
