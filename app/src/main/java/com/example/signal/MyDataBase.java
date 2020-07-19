@@ -28,7 +28,7 @@ public class MyDataBase extends SQLiteOpenHelper {
 
 
     public MyDataBase(@Nullable Context context) {
-        super(context, Db_Name, null, 1);
+        super(context, Db_Name, null, 2);
     }
 
 
@@ -74,6 +74,22 @@ public class MyDataBase extends SQLiteOpenHelper {
             return true;
         }
     }
+    public boolean updateData(long id,String StckNme, String Tgt,String Stp_ls, String hit, long instrumentToken ) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Col_2,StckNme);
+        contentValues.put(Col_3,Tgt);
+        contentValues.put(Col_4,Stp_ls);
+        contentValues.put(Col_5,instrumentToken);
+        contentValues.put(Col_7,hit);
+        long result = db.update(Tb_Name, contentValues, Col_1 + "=" + id, null);
+        if(result == -1){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
     public Cursor getData(){
         SQLiteDatabase db = this.getWritableDatabase();
         try {
